@@ -1,63 +1,95 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
+import Film from "./components/Film";
+import Person from "./components/Person";
 
 const App = () => {
-    const [films, setFilms] = useState([]);
-    const [people, setPeople] = useState([]);
-    let filmHolder;
-    let peopleHolder;
+  const [films, setFilms] = useState([]);
+  const [people, setPeople] = useState([]);
+  const [loadFilms, setLoadFilms] = useState(false);
+  const [loadPeople, setLoadPeople] = useState(false);
 
-    useEffect(() => {
-        fetch('https://ghibliapi.herokuapp.com/films') // fetching films 
-        .then(res => res.json())
-        .then(allFilms => filmHolder = allFilms)
-    }, []);
+  let handleLoadFilms = () => {
+    setLoadPeople(false);
+    setLoadFilms(true);
+  };
 
-    useEffect(() => {
-        fetch('https://ghibliapi.herokuapp.com/people') // fetching people
-        .then(res => res.json())
-        .then(allPeople => peopleHolder = allPeople)  
-    })
+  let handleLoadPeople = () => {
+    setLoadFilms(false);
+    setLoadPeople(true);
+  };
 
-    function handleFilmClick() {
-        setFilms(filmHolder);
-    }
+  useEffect(() => {
+    fetch("https://ghibliapi.herokuapp.com/films") // fetching films
+      .then((res) => res.json())
+      .then((allFilms) => setFilms(allFilms));
 
-    function handlePeopleClick() {
-        setPeople(peopleHolder);
-    }
+    fetch("https://ghibliapi.herokuapp.com/people") // fetching people
+      .then((res) => res.json())
+      .then((allPeople) => setPeople(allPeople));
+  }, []);
 
-
+  if (loadFilms === false && loadPeople === false) {
+    return (
+      <>
+        <button
+          className="btn btn-success btn-lg col-6"
+          onClick={handleLoadFilms}
+        >
+          Load Films
+        </button>
+        <button
+          className="btn btn-success btn-lg col-6"
+          onClick={handleLoadPeople}
+        >
+          Load People
+        </button>
+      </>
+    );
+  } else if (loadPeople === true) {
+      return(
+    <>
+      <button
+        className="btn btn-success btn-lg col-6"
+        onClick={handleLoadFilms}
+      >
+        Load Films
+      </button>
+      <button
+        className="btn btn-success btn-lg col-6"
+        onClick={handleLoadPeople}
+      >
+        Load People
+      </button>
+      <div className="row justify-content-center">
+        {people.map((person) => (
+          <Person person={person} />
+        ))}
+      </div>
+    </>
+    )
+  } else if (loadFilms === true) {
     return (
         <>
-            <button className="btn btn-success btn-lg col-6" onClick={handleFilmClick}>Load Films</button>
-            <button className="btn btn-success btn-lg col-6" onClick={handlePeopleClick}>Load People</button>
-            <div className="row justify-content-center">
-                {films.map(film =>(
-                    <div className="card col-4" key={film.id}>
-                        <div className="card shadow my-2">
-                            <div className="card-body">
-                                <h4 className="card-title">{film.title}</h4>
-                                <p className="card-text">{film.description}</p>                            
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <div className="row justify-content-center">
-                {people.map(person =>(
-                    <div className="card col-4" key={person.id}>
-                        <div className="card shadow my-2">
-                            <div className="card-body">
-                                <h4 className="card-title">{person.name}</h4>
-                                <p className="card-text">{person.age}, {person.gender}</p>
-                                <a target="null" href={person.url}>go to JSON</a>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </>
+      <button
+        className="btn btn-success btn-lg col-6"
+        onClick={handleLoadFilms}
+      >
+        Load Films
+      </button>
+      <button
+        className="btn btn-success btn-lg col-6"
+        onClick={handleLoadPeople}
+      >
+        Load People
+      </button>
+      <div className="row justify-content-center">
+        {films.map((film) => (
+          <Film film={film} />
+        ))}
+      </div>
+    </>
     )
-}
+  }
+};
 
 export default App;
